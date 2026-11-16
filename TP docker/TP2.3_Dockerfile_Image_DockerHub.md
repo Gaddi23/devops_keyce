@@ -21,12 +21,13 @@ mkdir -p ~/legeni_static_website && cd ~/legeni_static_website
 
 Créez le fichier `Dockerfile` (sans extension) :
 ```dockerfile
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 LABEL maintainer="Legeni"
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nginx git
+RUN apt-get install -y nginx git
 RUN rm -Rf /var/www/html/*
-RUN git clone https://github.com/Legeni07/restaurant.git /var/www/html/
+RUN 
+ /var/www/html/
 EXPOSE 80
 ENTRYPOINT ["/usr/sbin/nginx", "-g", "daemon off;"]
 ```
