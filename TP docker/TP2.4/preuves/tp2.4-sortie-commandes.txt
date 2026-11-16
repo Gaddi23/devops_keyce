@@ -1,0 +1,218 @@
+# TP 2.4 — sorties réelles des commandes (16/11/2026 21:02)
+
+## Étape 1 : le bridge par défaut n'a pas de DNS
+
+$ docker network ls
+NETWORK ID     NAME                             DRIVER    SCOPE
+675ab68a3e82   bridge                           bridge    local
+e1b10896cf12   host                             host      local
+c9a40022500a   jenkins-install_devops-network   bridge    local
+99c9345c1ee6   minikube                         bridge    local
+876e17578779   none                             null      local
+
+$ docker run -d --name c1 alpine:3.20 sleep infinity >/dev/null; docker run -d --name c2 alpine:3.20 sleep infinity >/dev/null; echo c1 c2 lancés
+c1 c2 lancés
+
+$ docker exec c1 ping -c 2 c2
+ping: bad address 'c2'
+
+$ docker exec c1 ping -c 2 $(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' c2)
+PING 172.17.0.3 (172.17.0.3): 56 data bytes
+64 bytes from 172.17.0.3: seq=0 ttl=64 time=5.178 ms
+64 bytes from 172.17.0.3: seq=1 ttl=64 time=0.108 ms
+
+--- 172.17.0.3 ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.108/2.643/5.178 ms
+
+$ docker rm -f c1 c2
+c1
+c2
+
+## Étape 2 : réseau bridge personnalisé
+
+$ docker network create -d bridge mon_reseau
+d83a27c572c2191a8a3896544dc08f3e5f874e4d63af20491240fd8487702e2c
+
+$ docker network inspect mon_reseau --format '{{(index .IPAM.Config 0).Subnet}}'
+172.19.0.0/16
+
+$ docker run -d --name B3_jour --network mon_reseau alpine:3.20 sleep infinity >/dev/null; docker run -d --name B3_soir --network mon_reseau alpine:3.20 sleep infinity >/dev/null; echo B3_jour B3_soir lancés
+B3_jour B3_soir lancés
+
+$ docker exec B3_jour ping -c 2 B3_soir
+PING B3_soir (172.19.0.3): 56 data bytes
+64 bytes from 172.19.0.3: seq=0 ttl=64 time=0.405 ms
+64 bytes from 172.19.0.3: seq=1 ttl=64 time=0.135 ms
+
+--- B3_soir ping statistics ---
+2 packets transmitted, 2 packets received, 0% packet loss
+round-trip min/avg/max = 0.135/0.270/0.405 ms
+
+$ docker network inspect mon_reseau --format '{{range .Containers}}{{.Name}} {{.IPv4Address}} | {{end}}'
+B3_soir 172.19.0.3/16 | B3_jour 172.19.0.2/16 | 
+
+### Connexion à chaud
+
+$ docker run -d --name visiteur alpine:3.20 sleep infinity >/dev/null; echo visiteur lancé sur le bridge par défaut
+visiteur lancé sur le bridge par défaut
+
+$ docker exec visiteur ping -c 1 -W 1 B3_jour
+ping: bad address 'B3_jour'
+
+$ docker network connect mon_reseau visiteur
+
+$ docker exec visiteur ping -c 1 B3_jour
+PING B3_jour (172.19.0.2): 56 data bytes
+64 bytes from 172.19.0.2: seq=0 ttl=64 time=1.790 ms
+
+--- B3_jour ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 1.790/1.790/1.790 ms
+
+$ docker network disconnect mon_reseau visiteur && docker rm -f visiteur
+visiteur
+
+## Étape 3 : volume anonyme (temporaire)
+
+$ docker rm -f B3_jour B3_soir
+B3_jour
+B3_soir
+
+$ docker run -d --name B3_jour --network mon_reseau -v /partage alpine:3.20 sleep infinity >/dev/null; docker run -d --name B3_soir --network mon_reseau --volumes-from B3_jour alpine:3.20 sleep infinity >/dev/null; echo lancés
+lancés
+
+$ docker exec B3_jour sh -c 'echo "Bonjour du jour" > /partage/fichier.txt'
+
+$ docker exec B3_soir cat /partage/fichier.txt
+Bonjour du jour
+
+$ docker exec B3_soir sh -c 'echo Bonsoir >> /partage/fichier.txt'
+
+$ docker exec B3_jour cat /partage/fichier.txt
+Bonjour du jour
+Bonsoir
+
+$ docker inspect B3_jour --format '{{range .Mounts}}{{.Name}} -> {{.Destination}}{{end}}'
+f4f0c6ef7dad63b3baba5e17914c9e44f0bf0bb5f76a367e239f1c6a80b82f08 -> /partage
+
+$ docker volume ls --filter name=f4f0c6ef7dad63b3baba5e17914c9e44f0bf0bb5f76a367e239f1c6a80b82f08
+DRIVER    VOLUME NAME
+local     f4f0c6ef7dad63b3baba5e17914c9e44f0bf0bb5f76a367e239f1c6a80b82f08
+
+$ docker rm -f -v B3_soir B3_jour
+B3_soir
+B3_jour
+
+$ docker volume ls --filter name=f4f0c6ef7dad63b3baba5e17914c9e44f0bf0bb5f76a367e239f1c6a80b82f08; echo '(liste vide : le volume anonyme a été supprimé avec -v)'
+DRIVER    VOLUME NAME
+(liste vide : le volume anonyme a été supprimé avec -v)
+
+## Étape 4 : volume nommé (persistant)
+
+$ docker volume create mon_volume_persistant
+mon_volume_persistant
+
+$ docker volume inspect mon_volume_persistant --format '{{.Mountpoint}}'
+/var/lib/docker/volumes/mon_volume_persistant/_data
+
+$ docker run -d --name B3_jour --network mon_reseau -v mon_volume_persistant:/mnt alpine:3.20 sleep infinity >/dev/null; docker run -d --name B3_soir --network mon_reseau -v mon_volume_persistant:/mnt:ro alpine:3.20 sleep infinity >/dev/null; echo lancés
+lancés
+
+$ docker exec B3_jour sh -c 'echo Bonjour > /mnt/fichier.txt'
+
+$ docker exec B3_soir cat /mnt/fichier.txt
+Bonjour
+
+$ docker exec B3_soir sh -c 'echo test > /mnt/x.txt'
+sh: can't create /mnt/x.txt: Read-only file system
+
+$ docker rm -f -v B3_jour B3_soir
+B3_jour
+B3_soir
+
+$ docker volume ls --filter name=mon_volume_persistant
+DRIVER    VOLUME NAME
+local     mon_volume_persistant
+
+$ docker run --rm -v mon_volume_persistant:/mnt alpine:3.20 cat /mnt/fichier.txt
+Bonjour
+
+## Étape 5 : base PostgreSQL qui survit à sa suppression
+
+$ docker run -d --name pg --network mon_reseau -e POSTGRES_PASSWORD=secret -v pg_data:/var/lib/postgresql/data postgres:16-alpine
+3c226d7140aecf14587814ad8d7cee5f571df7c29cd9842081bdbb4185aa78c2
+
+$ until docker exec pg pg_isready -h 127.0.0.1 -U postgres -q; do sleep 1; done; echo base prête
+base prête
+
+$ docker exec pg psql -U postgres -c "CREATE TABLE eleves(nom text); INSERT INTO eleves VALUES ('B3 jour'),('B3 soir');"
+CREATE TABLE
+INSERT 0 2
+
+$ docker rm -f pg
+pg
+
+$ docker run -d --name pg --network mon_reseau -e POSTGRES_PASSWORD=secret -v pg_data:/var/lib/postgresql/data postgres:16-alpine
+9526213a86ff7e95b9f6f77aab912fb56b330c0340661ccb7b8e46e740847ac3
+
+$ sleep 3; until docker exec pg pg_isready -h 127.0.0.1 -U postgres -q; do sleep 1; done; echo base prête
+base prête
+
+$ docker exec pg psql -U postgres -c 'SELECT * FROM eleves;'
+   nom   
+---------
+ B3 jour
+ B3 soir
+(2 rows)
+
+
+$ docker run --rm --network mon_reseau -e PGPASSWORD=secret postgres:16-alpine psql -h pg -U postgres -c 'SELECT count(*) FROM eleves;'
+ count 
+-------
+     2
+(1 row)
+
+
+## Défi : backend / frontend
+
+$ docker network create backend >/dev/null && docker network create frontend >/dev/null && echo réseaux créés
+réseaux créés
+
+$ docker run -d --name db --network backend alpine:3.20 sleep infinity >/dev/null; docker run -d --name webf --network frontend alpine:3.20 sleep infinity >/dev/null; docker run -d --name api --network backend alpine:3.20 sleep infinity >/dev/null; docker network connect frontend api; echo db webf api lancés
+db webf api lancés
+
+$ docker exec webf ping -c1 api
+PING api (172.21.0.3): 56 data bytes
+64 bytes from 172.21.0.3: seq=0 ttl=64 time=0.301 ms
+
+--- api ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 0.301/0.301/0.301 ms
+
+$ docker exec webf ping -c1 -W1 db
+ping: bad address 'db'
+
+$ docker exec api ping -c1 db
+PING db (172.20.0.2): 56 data bytes
+64 bytes from 172.20.0.2: seq=0 ttl=64 time=0.363 ms
+
+--- db ping statistics ---
+1 packets transmitted, 1 packets received, 0% packet loss
+round-trip min/avg/max = 0.363/0.363/0.363 ms
+
+$ docker rm -f db webf api >/dev/null && docker network rm backend frontend
+backend
+frontend
+
+## Étape 6 : nettoyage
+
+$ docker rm -f pg
+pg
+
+$ docker volume rm mon_volume_persistant pg_data
+mon_volume_persistant
+pg_data
+
+$ docker network rm mon_reseau
+mon_reseau

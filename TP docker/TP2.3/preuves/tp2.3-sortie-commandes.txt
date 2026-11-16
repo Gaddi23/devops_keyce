@@ -1,0 +1,124 @@
+# TP 2.3 — sorties réelles des commandes (16/11/2026 21:21)
+# Construction initiale de la v1 : voir build-v1.log
+
+## Étape 3 : image et couches
+
+$ docker images legeni_static_website
+IMAGE                      ID             DISK USAGE   CONTENT SIZE   EXTRA
+legeni_static_website:v1   b029e5e0f0b6        356MB          102MB        
+
+$ docker history legeni_static_website:v1 --format 'table {{.CreatedBy}}\t{{.Size}}' | cut -c1-110
+CREATED BY                                      SIZE
+ENTRYPOINT ["/usr/sbin/nginx" "-g" "daemon o…   0B
+EXPOSE [80/tcp]                                 0B
+RUN /bin/sh -c git clone https://github.com/…   2.3MB
+RUN /bin/sh -c rm -Rf /var/www/html/* # buil…   16.4kB
+RUN /bin/sh -c apt-get install -y nginx git …   108MB
+RUN /bin/sh -c apt-get update # buildkit        55.3MB
+LABEL maintainer=Legeni                         0B
+/bin/sh -c #(nop)  CMD ["/bin/bash"]            0B
+/bin/sh -c #(nop) ADD file:3c41cdb0a333e30d2…   87.7MB
+/bin/sh -c #(nop)  LABEL org.opencontainers.…   0B
+/bin/sh -c #(nop)  ARG LAUNCHPAD_BUILD_ARCH     0B
+/bin/sh -c #(nop)  ARG RELEASE                  0B
+
+$ docker image inspect legeni_static_website:v1 --format '{{len .RootFS.Layers}} couches'
+5 couches
+
+### Rebuild identique : tout vient du cache
+
+$ docker build --progress=plain -t legeni_static_website:v1 . 2>&1 | grep -E 'CACHED|DONE [0-9]' | head -8
+#1 DONE 0.0s
+#2 DONE 0.3s
+#3 DONE 0.0s
+#4 DONE 0.1s
+#5 CACHED
+#6 CACHED
+#7 CACHED
+#8 CACHED
+
+### LABEL modifié (maintainer="Legeni B3") : quelles étapes sont rejouées ?
+
+$ docker build --progress=plain -f Dockerfile.label -t legeni_static_website:label . 2>&1 | grep -E '^#[0-9]+ \[|CACHED' | head -10
+#1 [internal] load build definition from Dockerfile.label
+
+## Étape 4 : lancer et tester (port hôte 8090)
+
+$ docker rm -f legeni_static_website >/dev/null 2>&1; docker run --name legeni_static_website -d -p 8090:80 legeni_static_website:v1
+9a385499970887eccdf0356c0a649a710bb1b40b6b20999c1c00eb6ebbdd1279
+
+$ sleep 2; docker ps --filter name=legeni_static_website --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+NAMES                   STATUS         PORTS
+legeni_static_website   Up 2 seconds   0.0.0.0:8090->80/tcp, [::]:8090->80/tcp
+
+$ curl -sI http://localhost:8090 | head -1
+HTTP/1.1 200 OK
+
+$ curl -s http://localhost:8090 | grep -i '<title>'
+<title>Restaurant</title>
+
+### Le site est dans l'image, pas sur le disque
+
+$ docker exec legeni_static_website ls /var/www/html | head -12
+1.jpg
+11.jpg
+2.jpg
+22.jpg
+L’histoire des-WPS Office.docx
+README.md
+a.jpg
+aa.jpg
+acceuil.css
+b.jpg
+baliseimage.html
+bluetooth_content_share.html
+
+$ ls
+Dockerfile
+Dockerfile.v2
+captures
+compte-rendu.md
+preuves
+
+## Étape 5 : Dockerfile v2 optimisé (construction : voir build-v2.log)
+
+$ docker images legeni_static_website
+IMAGE                      ID             DISK USAGE   CONTENT SIZE   EXTRA
+legeni_static_website:v1   22844f1645da        356MB          102MB   U    
+legeni_static_website:v2   33708e47e5ec        294MB         74.3MB        
+
+$ docker history legeni_static_website:v2 --format 'table {{.CreatedBy}}\t{{.Size}}' | cut -c1-110 | head -7
+CREATED BY                                      SIZE
+CMD ["nginx" "-g" "daemon off;"]                0B
+EXPOSE [80/tcp]                                 0B
+RUN /bin/sh -c git -c http.version=HTTP/1.1 …   1.13MB
+RUN /bin/sh -c apt-get update  && DEBIAN_FRO…   130MB
+LABEL maintainer=Legeni                         0B
+/bin/sh -c #(nop)  CMD ["/bin/bash"]            0B
+
+### ENTRYPOINT (v1) contre CMD (v2)
+
+$ docker run --rm legeni_static_website:v2 cat /etc/os-release | head -2
+PRETTY_NAME="Ubuntu 22.04.5 LTS"
+NAME="Ubuntu"
+
+$ docker run --rm legeni_static_website:v1 cat /etc/os-release
+nginx: invalid option: "cat"
+
+### Le site v2 répond
+
+$ docker run -d --rm --name resto_v2 -p 8092:80 legeni_static_website:v2 && sleep 2 && curl -sI http://localhost:8092 | head -1 && curl -s http://localhost:8092 | grep -i '<title>'; docker rm -f resto_v2 >/dev/null
+1c3a3926ae0aa8c577b752d6c481daa8a849acaf87b3515ec3093041a691fbe6
+HTTP/1.1 200 OK
+<title>Restaurant</title>
+
+## Étape 6 : publication sur Docker Hub (compte gaddiela, connexion par jeton d'accès)
+
+$ echo "$DOCKERHUB_TOKEN" | docker login -u gaddiela --password-stdin
+Error response from daemon: Get "https://registry-1.docker.io/v2/": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+
+$ docker tag legeni_static_website:v2 gaddiela/legeni_static_website:v2
+
+$ docker push gaddiela/legeni_static_website:v2
+The push refers to repository [docker.io/gaddiela/legeni_static_website]
+failed to authorize: failed to fetch oauth token: Post "https://auth.docker.io/token": dialing auth.docker.io:443 container via direct connection because Docker Desktop has no HTTPS proxy: connecting to auth.docker.io:443: dial tcp: lookup auth.docker.io: no such host

@@ -1,0 +1,169 @@
+# TP 2.2 — sorties réelles des commandes (16/11/2026 20:56)
+# Docker Desktop sous Windows 11 : étapes 1-2 (installation, groupe docker) déjà assurées par Docker Desktop.
+
+## Étape 2 : client et serveur
+
+$ docker version --format 'Client: {{.Client.Version}} ({{.Client.Os}}/{{.Client.Arch}})  |  Server: {{.Server.Version}} ({{.Server.Os}}/{{.Server.Arch}})'
+Client: 29.5.2 (windows/amd64)  |  Server: 29.5.2 (linux/amd64)
+
+$ docker info --format 'Server Version: {{.ServerVersion}} | Storage Driver: {{.Driver}} | Cgroup: {{.CgroupDriver}} v{{.CgroupVersion}}'
+Server Version: 29.5.2 | Storage Driver: overlayfs | Cgroup: cgroupfs v2
+
+## Étape 3 : premier conteneur
+
+$ docker run --name hello hello-world
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+
+$ docker images hello-world
+IMAGE                ID             DISK USAGE   CONTENT SIZE   EXTRA
+hello-world:latest   cf1b20a0c89a       25.9kB         9.49kB   U    
+
+$ docker ps --filter name=hello
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+$ docker ps -a --filter name=hello --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
+NAMES     IMAGE         STATUS
+hello     hello-world   Exited (0) 4 seconds ago
+
+$ docker rm hello
+hello
+
+## Étape 4 : cycle de vie (port hôte 8091 car 8081 sert au port-forward WordPress)
+
+$ docker rm -f web >/dev/null 2>&1; docker run -d --name web -p 8091:80 nginx:1.27-alpine
+d0b01c63c77da42c4c7d0e22d960114816cc2575584c12c80a3259e63e8b5379
+
+$ sleep 2; docker ps --filter name=web --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+NAMES     IMAGE               STATUS         PORTS
+web       nginx:1.27-alpine   Up 5 seconds   0.0.0.0:8091->80/tcp, [::]:8091->80/tcp
+
+$ curl -s http://localhost:8091 | head -5
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+
+$ docker logs --tail 5 web
+2026/11/16 19:56:50 [notice] 1#1: start worker process 30
+2026/11/16 19:56:50 [notice] 1#1: start worker process 31
+2026/11/16 19:56:50 [notice] 1#1: start worker process 32
+2026/11/16 19:56:50 [notice] 1#1: start worker process 33
+172.17.0.1 - - [16/Nov/2026:19:56:58 +0000] "GET / HTTP/1.1" 200 615 "-" "curl/8.19.0" "-"
+
+$ docker top web
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                15685               15660               0                   19:56               ?                   00:00:00            nginx: master process nginx -g daemon off;
+statd               15727               15685               0                   19:56               ?                   00:00:00            nginx: worker process
+statd               15728               15685               0                   19:56               ?                   00:00:00            nginx: worker process
+statd               15729               15685               0                   19:56               ?                   00:00:00            nginx: worker process
+statd               15730               15685               0                   19:56               ?                   00:00:00            nginx: worker process
+
+$ docker stats --no-stream web --format 'table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}'
+NAME      CPU %     MEM USAGE / LIMIT
+web       0.00%     4.379MiB / 5.79GiB
+
+$ docker inspect web --format '{{.State.Status}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'
+running 172.17.0.2
+
+### 4.3 Entrer dans le conteneur
+
+$ docker exec web cat /etc/os-release | head -2
+NAME="Alpine Linux"
+ID=alpine
+
+$ docker exec web ps
+PID   USER     TIME  COMMAND
+    1 root      0:00 nginx: master process nginx -g daemon off;
+   30 nginx     0:00 nginx: worker process
+   31 nginx     0:00 nginx: worker process
+   32 nginx     0:00 nginx: worker process
+   33 nginx     0:00 nginx: worker process
+   41 root      0:00 ps
+
+### 4.4 Modification à chaud
+
+$ docker exec web sh -c 'echo "<h1>Modifié à la main</h1>" > /usr/share/nginx/html/index.html'
+
+$ curl -s http://localhost:8091
+<h1>Modifié à la main</h1>
+
+### 4.5 stop / start / rm
+
+$ docker stop web && docker ps -a --filter name=web --format '{{.Names}} {{.Status}}'
+web
+web Exited (0) 7 seconds ago
+
+$ docker start web && sleep 1 && curl -s http://localhost:8091
+web
+<h1>Modifié à la main</h1>
+
+$ docker rm -f web
+web
+
+$ docker run -d --name web -p 8091:80 nginx:1.27-alpine && sleep 2 && curl -s http://localhost:8091 | grep -i title
+3c453c09ace51bffdbeed6867182ed31aa7f364a0ab9970d01e6e8cff62f31ca
+<title>Welcome to nginx!</title>
+
+$ docker rm -f web
+web
+
+$ docker ps -a --filter name=web
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+## Étape 5 : conteneurs jetables (--rm)
+
+$ docker run --rm ubuntu:24.04 bash -c 'grep PRETTY /etc/os-release; echo conteneur jetable'
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+conteneur jetable
+
+$ docker ps -a | grep ubuntu || echo 'aucun conteneur ubuntu : --rm l a supprimé'
+aucun conteneur ubuntu : --rm l a supprimé
+
+$ docker run --rm alpine:3.20 echo 'Je vis 1 seconde'
+Je vis 1 seconde
+
+## Défi : Redis
+
+$ docker pull -q redis:7.4-alpine
+Error response from daemon: failed to resolve reference "docker.io/library/redis:7.4-alpine": failed to do request: Head "https://registry-1.docker.io/v2/library/redis/manifests/7.4-alpine": dialing registry-1.docker.io:443 container via direct connection because Docker Desktop has no HTTPS proxy: connecting to registry-1.docker.io:443: dial tcp: lookup registry-1.docker.io: no such host
+
+$ docker run -d --name cache redis:7.4-alpine && sleep 2
+Unable to find image 'redis:7.4-alpine' locally
+docker: Error response from daemon: failed to resolve reference "docker.io/library/redis:7.4-alpine": failed to do request: Head "https://registry-1.docker.io/v2/library/redis/manifests/7.4-alpine": dialing registry-1.docker.io:443 container via direct connection because Docker Desktop has no HTTPS proxy: connecting to registry-1.docker.io:443: dial tcp: lookup registry-1.docker.io: no such host
+
+Run 'docker run --help' for more information
+
+$ docker exec cache redis-cli SET cours devops
+Error response from daemon: No such container: cache
+
+$ docker exec cache redis-cli GET cours
+Error response from daemon: No such container: cache
+
+$ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' cache
+
+error: no such object: cache
+
+$ docker rm -f cache
+Error response from daemon: No such container: cache

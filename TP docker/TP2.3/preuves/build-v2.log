@@ -1,0 +1,38 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.v2
+#1 transferring dockerfile: 631B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/ubuntu:22.04
+#2 DONE 0.2s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 75B 0.0s done
+#3 DONE 0.1s
+
+#4 [1/3] FROM docker.io/library/ubuntu:22.04@sha256:9abcaffc92a5279fff3a6a41635c0800ea33e528425fb389658806476e7defde
+#4 resolve docker.io/library/ubuntu:22.04@sha256:9abcaffc92a5279fff3a6a41635c0800ea33e528425fb389658806476e7defde 0.1s done
+#4 DONE 0.1s
+
+#5 [2/3] RUN apt-get update  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends nginx git ca-certificates  && rm -rf /var/lib/apt/lists/* /var/www/html/*
+#5 CACHED
+
+#6 [3/3] RUN git -c http.version=HTTP/1.1 clone --depth 1 https://github.com/Legeni07/restaurant.git /var/www/html/  && rm -rf /var/www/html/.git
+#6 0.807 Cloning into '/var/www/html'...
+#6 DONE 12.2s
+
+#7 exporting to image
+#7 exporting layers
+#7 exporting layers 9.6s done
+#7 exporting manifest sha256:69ce5d265d8d05e0061581cd90804c143b078d0cef6d32ea27c235c158e07e54 0.0s done
+#7 exporting config sha256:1b5098cb7ab848614265d2577f58ecf0b08c7e7544dbb80b7d1c0bce940d0f00 0.0s done
+#7 exporting attestation manifest sha256:36f598e0a9d6eaca9d7aa524c4ce9e1e57ea0d828d6f732412ccdaeec0d7fabf 0.1s done
+#7 exporting manifest list sha256:33708e47e5eca29ae6cdbb4d3dfdc6ec22acce9c8ab85944517402e1fa92b80d
+#7 exporting manifest list sha256:33708e47e5eca29ae6cdbb4d3dfdc6ec22acce9c8ab85944517402e1fa92b80d 0.0s done
+#7 naming to docker.io/library/legeni_static_website:v2 done
+#7 unpacking to docker.io/library/legeni_static_website:v2
+#7 unpacking to docker.io/library/legeni_static_website:v2 2.5s done
+#7 DONE 12.4s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/3xx2yksrbwq5q613fifo8p9fi

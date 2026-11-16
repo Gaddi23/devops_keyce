@@ -4,9 +4,9 @@ Comptes-rendus des travaux pratiques du cours *Initiation au DevOps*. Chaque dos
 
 | Module | TP | État | Compte-rendu |
 |---|---|---|---|
-| Docker | 2.2 Premiers conteneurs | à faire | [TP docker/TP2.2](TP%20docker/TP2.2/compte-rendu.md) |
-| Docker | 2.3 Dockerfile + Docker Hub | Dockerfile écrit | [TP docker/TP2.3](TP%20docker/TP2.3/compte-rendu.md) |
-| Docker | 2.4 Réseaux et volumes | à faire | [TP docker/TP2.4](TP%20docker/TP2.4/compte-rendu.md) |
+| Docker | 2.2 Premiers conteneurs | **fait** — étapes 2 à 5 (Odoo : manque d'espace disque) | [TP docker/TP2.2](TP%20docker/TP2.2/compte-rendu.md) |
+| Docker | 2.3 Dockerfile + Docker Hub | **fait** — v1 356 Mo, v2 294 Mo | [TP docker/TP2.3](TP%20docker/TP2.3/compte-rendu.md) |
+| Docker | 2.4 Réseaux et volumes | **fait** — défi compris | [TP docker/TP2.4](TP%20docker/TP2.4/compte-rendu.md) |
 | Docker | 2.5 Configuration | à faire (`app-fil-rouge/` manquant) | [TP docker/TP2.5](TP%20docker/TP2.5/compte-rendu.md) |
 | Docker | 2.6 Dockerfile avancé | à faire (`app-fil-rouge/` manquant) | [TP docker/TP2.6](TP%20docker/TP2.6/compte-rendu.md) |
 | Docker | 2.7 Réseaux et stockage avancés | à faire | [TP docker/TP2.7](TP%20docker/TP2.7/compte-rendu.md) |
