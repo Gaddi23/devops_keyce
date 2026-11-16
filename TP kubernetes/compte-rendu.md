@@ -67,12 +67,34 @@ docker exec -w /tmp/wp ansible ansible-playbook wordpress-playbook.yaml
 
 Correction : le playbook utilise `src:` au lieu de `lookup('file') + definition`, qui ne gère pas bien les fichiers à plusieurs documents (`---`). Une dernière tâche attend que WordPress soit `Available`.
 
-## Captures à ajouter dans `captures/`
+## Captures
+
+**Conteneurs : minikube, jenkins et ansible en cours d'exécution**
+
+![Conteneurs : minikube, jenkins et ansible en cours d'exécution](captures/01-conteneurs-minikube-jenkins-ansible.png)
+
+**Volumes : minikube (3,2 Go) et jenkins_home**
+
+![Volumes : minikube (3,2 Go) et jenkins_home](captures/02-volumes-minikube-jenkins.png)
+
+**Logs minikube : adresse du nœud 192.168.49.2**
+
+![Logs minikube : adresse du nœud 192.168.49.2](captures/03-logs-minikube-adresse-ip.png)
+
+**Logs minikube : démarrage des services du nœud**
+
+![Logs minikube : démarrage des services du nœud](captures/04-logs-minikube-demarrage-systeme.png)
+
+**Logs minikube : nœud Debian 12 démarré**
+
+![Logs minikube : nœud Debian 12 démarré](captures/05-logs-minikube-debian.png)
+
+### Captures encore à ajouter
 
 - [ ] `kubectl get nodes` et `kubectl get all`
 - [ ] `kubectl describe pod my-pod` (événements)
 - [ ] suppression d'un pod puis recréation automatique
-- [ ] page WebApp et page d'installation WordPress dans le navigateur (`minikube service … --url`)
+- [ ] page WebApp et page d'installation WordPress (`minikube service … --url`)
 - [ ] les deux passages du playbook (`changed=3` puis `changed=0`)
 
 ## Problèmes rencontrés

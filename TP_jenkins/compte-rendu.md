@@ -54,13 +54,58 @@ latest: digest: sha256:77c13afc0e0d8514c63b9e8fa2b294528b24d75736328dacd0941660d
 Finished: SUCCESS
 ```
 
-## Captures à ajouter dans `captures/`
+## Captures
 
-- [ ] tableau de bord Jenkins avec les 3 jobs en bleu
+**Tableau de bord : les 4 jobs en succès**
+
+![Tableau de bord : les 4 jobs en succès](captures/01-tableau-de-bord-tous-les-jobs.png)
+
+**Historique : build, test-acceptance, artefact et pipeline stables**
+
+![Historique : build, test-acceptance, artefact et pipeline stables](captures/02-historique-des-builds.png)
+
+**TP 3.2 — job build #1 réussi**
+
+![TP 3.2 — job build #1 réussi](captures/03-job-build-tp3.2.png)
+
+**TP 3.3 — job test-acceptance #1 réussi**
+
+![TP 3.3 — job test-acceptance #1 réussi](captures/04-job-test-acceptance-tp3.3.png)
+
+**TP 3.4 — espace de travail du job artefact (dépôt cloné par Jenkins)**
+
+![TP 3.4 — espace de travail du job artefact (dépôt cloné par Jenkins)](captures/05-artefact-espace-de-travail.png)
+
+**TP 3.4 — code de l'application (app.py, tests.py, wsgi.py)**
+
+![TP 3.4 — code de l'application (app.py, tests.py, wsgi.py)](captures/06-artefact-code-webapp.png)
+
+**TP 3.4 — jeton Docker Hub jenkins-tp (Read & Write, expire le 16/12/2026)**
+
+![TP 3.4 — jeton Docker Hub jenkins-tp (Read & Write, expire le 16/12/2026)](captures/07-dockerhub-jeton-jenkins-tp.png)
+
+**Docker Hub — dépôts du compte gaddiela**
+
+![Docker Hub — dépôts du compte gaddiela](captures/08-dockerhub-depots.png)
+
+**Premier pipeline DEVOPS-KEYCE-CI-CD (11/11/2026)**
+
+![Premier pipeline DEVOPS-KEYCE-CI-CD (11/11/2026)](captures/09-pipeline-devops-keyce-ci-cd.png)
+
+**Logs de démarrage de Jenkins (Docker Desktop)**
+
+![Logs de démarrage de Jenkins (Docker Desktop)](captures/10-logs-jenkins-demarrage.png)
+
+**Logs du redémarrage de Jenkins (réinitialisation du mot de passe)**
+
+![Logs du redémarrage de Jenkins (réinitialisation du mot de passe)](captures/11-logs-jenkins-redemarrage.png)
+
+### Captures encore à ajouter
+
 - [ ] console de `test-acceptance #1` (ligne `Status code 200`)
-- [ ] console de `artefact #1` (ligne `Login Succeeded` et push)
-- [ ] page Docker Hub `gaddiela/alpinehelloworld`
-- [ ] credential `dockerhub` masqué (`******`)
+- [ ] console de `artefact #1` (lignes `Login Succeeded` et push)
+- [ ] page Docker Hub `gaddiela/alpinehelloworld` (rafraîchir la liste des dépôts)
+- [ ] credential `dockerhub` masqué dans Jenkins (Manage Jenkins → Credentials)
 
 ## Problèmes rencontrés
 
