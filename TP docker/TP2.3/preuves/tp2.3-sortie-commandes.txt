@@ -115,10 +115,49 @@ HTTP/1.1 200 OK
 ## Étape 6 : publication sur Docker Hub (compte gaddiela, connexion par jeton d'accès)
 
 $ echo "$DOCKERHUB_TOKEN" | docker login -u gaddiela --password-stdin
-Error response from daemon: Get "https://registry-1.docker.io/v2/": net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
+Login Succeeded
 
 $ docker tag legeni_static_website:v2 gaddiela/legeni_static_website:v2
 
 $ docker push gaddiela/legeni_static_website:v2
 The push refers to repository [docker.io/gaddiela/legeni_static_website]
-failed to authorize: failed to fetch oauth token: Post "https://auth.docker.io/token": dialing auth.docker.io:443 container via direct connection because Docker Desktop has no HTTPS proxy: connecting to auth.docker.io:443: dial tcp: lookup auth.docker.io: no such host
+03ac50e7e680: Layer already exists
+02163de04dd1: Layer already exists
+7634e38555d3: Already exists
+4c161c3bda26: Pushed
+v2: digest: sha256:33708e47e5eca29ae6cdbb4d3dfdc6ec22acce9c8ab85944517402e1fa92b80d size: 855
+
+### Vérification sur Docker Hub (API publique)
+
+$ curl -s https://hub.docker.com/v2/repositories/gaddiela/legeni_static_website/tags/ | python -c "import sys,json;[print('tag', t['name'], '-', round(t['full_size']/1e6,1), 'Mo compressés') for t in json.load(sys.stdin)['results']]"
+tag v2 - 74.3 Mo compressés
+
+### Preuve de portabilité : suppression des copies locales puis relance depuis le registre
+
+$ docker rm -f legeni_static_website resto >/dev/null 2>&1; docker rmi legeni_static_website:v2 gaddiela/legeni_static_website:v2
+Untagged: legeni_static_website:v2
+Untagged: gaddiela/legeni_static_website:v2
+Deleted: sha256:33708e47e5eca29ae6cdbb4d3dfdc6ec22acce9c8ab85944517402e1fa92b80d
+
+$ for i in 1 2 3 4; do docker run -d --name resto -p 8093:80 gaddiela/legeni_static_website:v2 && break; sleep 15; done
+Unable to find image 'gaddiela/legeni_static_website:v2' locally
+v2: Pulling from gaddiela/legeni_static_website
+03ac50e7e680: Pulling fs layer
+4c161c3bda26: Pulling fs layer
+03ac50e7e680: Already exists
+4c161c3bda26: Already exists
+03ac50e7e680: Pull complete
+4c161c3bda26: Pull complete
+7634e38555d3: Download complete
+Digest: sha256:33708e47e5eca29ae6cdbb4d3dfdc6ec22acce9c8ab85944517402e1fa92b80d
+Status: Downloaded newer image for gaddiela/legeni_static_website:v2
+63f34d1a34ff5d1936ba8dc183fe8d1f43e3e026aacd270ba52e968badc6a263
+
+$ sleep 3; curl -sI http://localhost:8093 | head -1
+HTTP/1.1 200 OK
+
+$ docker rm -f resto
+resto
+
+$ docker logout
+Removing login credentials for https://index.docker.io/v1/

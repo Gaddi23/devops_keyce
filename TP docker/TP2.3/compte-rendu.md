@@ -1,7 +1,7 @@
 # TP 2.3 — Dockerfile, image, conteneur et Docker Hub (site restaurant)
 
 **Énoncé :** [TP2.3_Dockerfile_Image_DockerHub.md](../TP2.3_Dockerfile_Image_DockerHub.md)
-**Statut :** fait le 16/11/2026 — v1 et v2 construites et testées ; publication Docker Hub : voir étape 6
+**Statut :** fait le 16/11/2026 — v1 et v2 construites et testées, v2 publiée sur Docker Hub et relancée depuis le registre
 **Preuves :** [`preuves/tp2.3-sortie-commandes.txt`](preuves/tp2.3-sortie-commandes.txt) (toutes les commandes), [`preuves/build-v1.log`](preuves/build-v1.log), [`preuves/build-v2.log`](preuves/build-v2.log)
 
 ## Objectif
@@ -62,14 +62,15 @@ S'ils sont séparés, la couche `apt-get update` est mise en cache. Plus tard, s
 
 ## Étape 6 — Publication sur Docker Hub
 
-Connexion par **jeton d'accès** (`docker login --password-stdin`), jamais par mot de passe ; l'image doit être préfixée par l'identifiant : `gaddiela/legeni_static_website:v2`. Résultat dans [`preuves/tp2.3-sortie-commandes.txt`](preuves/tp2.3-sortie-commandes.txt).
+Connexion par **jeton d'accès** (`docker login --password-stdin`), jamais par mot de passe ; l'image doit être préfixée par l'identifiant : `gaddiela/legeni_static_website:v2`. `Login Succeeded`, push terminé (`digest: sha256:33708e47…`), tag `v2` visible sur Docker Hub. Toutes les copies locales ont ensuite été supprimées : `docker run gaddiela/legeni_static_website:v2` a retéléchargé l'image et le site a répondu `HTTP/1.1 200 OK`. Déconnexion avec `docker logout` à la fin. Détail dans [`preuves/tp2.3-sortie-commandes.txt`](preuves/tp2.3-sortie-commandes.txt).
 
 ## Vérifications
 
 - [x] `docker images legeni_static_website` : tags `v1` (356 Mo) et `v2` (294 Mo), v2 plus légère
 - [x] `docker history legeni_static_website:v1` : une ligne par instruction
 - [x] `curl -sI http://localhost:8090` : `HTTP/1.1 200 OK`
-- [ ] page Docker Hub : tag `v2` visible sur `gaddiela/legeni_static_website`
+- [x] Docker Hub : tag `v2` (74,3 Mo compressés) sur [`gaddiela/legeni_static_website`](https://hub.docker.com/r/gaddiela/legeni_static_website)
+- [x] portabilité : après `docker rmi`, `docker run` retélécharge l'image depuis Docker Hub et le site répond `HTTP/1.1 200 OK`
 
 ## Problèmes rencontrés
 
