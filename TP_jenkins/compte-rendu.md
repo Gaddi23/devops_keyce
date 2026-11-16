@@ -130,10 +130,13 @@ Finished: SUCCESS
 
 ![Logs du redémarrage de Jenkins](captures/17-logs-jenkins-redemarrage.png)
 
-### Captures encore à ajouter
+**TP 3.4 — image gaddiela/alpinehelloworld:latest publiée sur Docker Hub (25,3 Mo)**
 
-- [ ] page Docker Hub `gaddiela/alpinehelloworld` (https://hub.docker.com/r/gaddiela/alpinehelloworld)
-- [ ] credential `dockerhub` masqué dans Jenkins (http://localhost:8185/manage/credentials/)
+![TP 3.4 — image publiée sur Docker Hub](captures/18-dockerhub-image-alpinehelloworld.png)
+
+**TP 3.4 — credential dockerhub dans Jenkins, jeton masqué (gaddiela/******)**
+
+![TP 3.4 — credential dockerhub](captures/19-jenkins-credential-dockerhub.png)
 
 ## Problèmes rencontrés
 
