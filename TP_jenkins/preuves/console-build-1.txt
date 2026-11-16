@@ -1,0 +1,35 @@
+Started by user TCHATCHOUA GADDIELA
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/build
+[build] $ /bin/bash /tmp/jenkins2712659183445957017.sh
+Cloning into 'alpinehelloworld'...
+Sending build context to Docker daemon  9.216kB
+Step 1/9 : FROM alpine:latest
+ ---> f59abe656b69
+Step 2/9 : RUN apk add --no-cache --update python3 py3-pip bash
+ ---> Using cache
+ ---> c8f005544969
+Step 3/9 : ADD ./webapp/requirements.txt /tmp/requirements.txt
+ ---> Using cache
+ ---> 40ef8c6f3d15
+Step 4/9 : RUN pip3 install --break-system-packages --no-cache-dir -q -r /tmp/requirements.txt
+ ---> Using cache
+ ---> 2caa6b51c2eb
+Step 5/9 : ADD ./webapp /opt/webapp/
+ ---> Using cache
+ ---> b7c042c87e13
+Step 6/9 : WORKDIR /opt/webapp
+ ---> Using cache
+ ---> 1320f6b152cf
+Step 7/9 : RUN adduser -D myuser
+ ---> Using cache
+ ---> ba6fd35fd752
+Step 8/9 : USER myuser
+ ---> Using cache
+ ---> 49bcad7bc0d3
+Step 9/9 : CMD gunicorn --bind 0.0.0.0:$PORT wsgi
+ ---> Using cache
+ ---> 77c13afc0e0d
+Successfully built 77c13afc0e0d
+Successfully tagged alpinehelloworld:latest
+Finished: SUCCESS

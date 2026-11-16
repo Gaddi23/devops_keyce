@@ -54,6 +54,12 @@ latest: digest: sha256:77c13afc0e0d8514c63b9e8fa2b294528b24d75736328dacd0941660d
 Finished: SUCCESS
 ```
 
+## Preuves texte (journaux complets)
+
+- [`console-build-1.txt`](preuves/console-build-1.txt) — se termine par `Successfully tagged alpinehelloworld:latest` / `Finished: SUCCESS`
+- [`console-test-acceptance-1.txt`](preuves/console-test-acceptance-1.txt) — `Response Code: 200` / `Finished: SUCCESS`
+- [`console-artefact-1.txt`](preuves/console-artefact-1.txt) — `Login Succeeded`, push, `Finished: SUCCESS`
+
 ## Captures
 
 **Tableau de bord : les 4 jobs en succès**
@@ -64,48 +70,70 @@ Finished: SUCCESS
 
 ![Historique : build, test-acceptance, artefact et pipeline stables](captures/02-historique-des-builds.png)
 
-**TP 3.2 — job build #1 réussi**
+**TP 3.2 — job build**
 
-![TP 3.2 — job build #1 réussi](captures/03-job-build-tp3.2.png)
+![TP 3.2 — job build](captures/03-job-build.png)
 
-**TP 3.3 — job test-acceptance #1 réussi**
+**TP 3.2 — build #1 réussi (8,2 s)**
 
-![TP 3.3 — job test-acceptance #1 réussi](captures/04-job-test-acceptance-tp3.3.png)
+![TP 3.2 — build #1 réussi (8,2 s)](captures/04-build-1-reussi.png)
 
-**TP 3.4 — espace de travail du job artefact (dépôt cloné par Jenkins)**
+**TP 3.3 — job test-acceptance**
 
-![TP 3.4 — espace de travail du job artefact (dépôt cloné par Jenkins)](captures/05-artefact-espace-de-travail.png)
+![TP 3.3 — job test-acceptance](captures/05-job-test-acceptance.png)
+
+**TP 3.3 — test-acceptance #1 réussi, révision Git 9a71aa6**
+
+![TP 3.3 — test-acceptance #1 réussi, révision Git 9a71aa6](captures/06-test-acceptance-1-reussi.png)
+
+**TP 3.4 — artefact #1 réussi (1 min 22 s)**
+
+![TP 3.4 — artefact #1 réussi (1 min 22 s)](captures/07-artefact-1-reussi.png)
+
+**TP 3.4 — console : clone du dépôt alpinehelloworld**
+
+![TP 3.4 — console : clone du dépôt alpinehelloworld](captures/08-artefact-console-clone-git.png)
+
+**TP 3.4 — espace de travail du job (Dockerfile, webapp/)**
+
+![TP 3.4 — espace de travail du job (Dockerfile, webapp/)](captures/09-artefact-espace-de-travail.png)
 
 **TP 3.4 — code de l'application (app.py, tests.py, wsgi.py)**
 
-![TP 3.4 — code de l'application (app.py, tests.py, wsgi.py)](captures/06-artefact-code-webapp.png)
+![TP 3.4 — code de l'application (app.py, tests.py, wsgi.py)](captures/10-artefact-code-webapp.png)
 
-**TP 3.4 — jeton Docker Hub jenkins-tp (Read & Write, expire le 16/12/2026)**
+**TP 3.4 — jeton jenkins-tp (Read & Write) utilisé le 16/11 à 16:24**
 
-![TP 3.4 — jeton Docker Hub jenkins-tp (Read & Write, expire le 16/12/2026)](captures/07-dockerhub-jeton-jenkins-tp.png)
+![TP 3.4 — jeton jenkins-tp (Read & Write) utilisé le 16/11 à 16:24](captures/11-dockerhub-jeton-jenkins-tp-utilise.png)
 
 **Docker Hub — dépôts du compte gaddiela**
 
-![Docker Hub — dépôts du compte gaddiela](captures/08-dockerhub-depots.png)
+![Docker Hub — dépôts du compte gaddiela](captures/12-dockerhub-depots.png)
 
-**Premier pipeline DEVOPS-KEYCE-CI-CD (11/11/2026)**
+**Premier pipeline DEVOPS-KEYCE-CI-CD**
 
-![Premier pipeline DEVOPS-KEYCE-CI-CD (11/11/2026)](captures/09-pipeline-devops-keyce-ci-cd.png)
+![Premier pipeline DEVOPS-KEYCE-CI-CD](captures/13-pipeline-devops-keyce.png)
 
-**Logs de démarrage de Jenkins (Docker Desktop)**
+**Pipeline DEVOPS-KEYCE-CI-CD #1 (11/11/2026)**
 
-![Logs de démarrage de Jenkins (Docker Desktop)](captures/10-logs-jenkins-demarrage.png)
+![Pipeline DEVOPS-KEYCE-CI-CD #1 (11/11/2026)](captures/14-pipeline-devops-keyce-1.png)
 
-**Logs du redémarrage de Jenkins (réinitialisation du mot de passe)**
+**Console du pipeline : vérification Jenkins, utilisateur jenkins, Java 21**
 
-![Logs du redémarrage de Jenkins (réinitialisation du mot de passe)](captures/11-logs-jenkins-redemarrage.png)
+![Console du pipeline : vérification Jenkins, utilisateur jenkins, Java 21](captures/15-pipeline-devops-keyce-console.png)
+
+**Logs de démarrage de Jenkins**
+
+![Logs de démarrage de Jenkins](captures/16-logs-jenkins-demarrage.png)
+
+**Logs du redémarrage de Jenkins**
+
+![Logs du redémarrage de Jenkins](captures/17-logs-jenkins-redemarrage.png)
 
 ### Captures encore à ajouter
 
-- [ ] console de `test-acceptance #1` (ligne `Status code 200`)
-- [ ] console de `artefact #1` (lignes `Login Succeeded` et push)
-- [ ] page Docker Hub `gaddiela/alpinehelloworld` (rafraîchir la liste des dépôts)
-- [ ] credential `dockerhub` masqué dans Jenkins (Manage Jenkins → Credentials)
+- [ ] page Docker Hub `gaddiela/alpinehelloworld` (https://hub.docker.com/r/gaddiela/alpinehelloworld)
+- [ ] credential `dockerhub` masqué dans Jenkins (http://localhost:8185/manage/credentials/)
 
 ## Problèmes rencontrés
 

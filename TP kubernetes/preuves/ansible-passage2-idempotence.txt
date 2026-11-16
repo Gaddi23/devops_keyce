@@ -1,0 +1,19 @@
+# docker exec -w /tmp/wp ansible ansible-playbook wordpress-playbook.yaml
+
+PLAY [Deploy WordPress] ********************************************************
+
+TASK [Deploy MySQL (PVC + Deployment + Service)] *******************************
+ok: [localhost]
+
+TASK [Deploy WordPress] ********************************************************
+ok: [localhost]
+
+TASK [Expose WordPress Service] ************************************************
+ok: [localhost]
+
+TASK [Attendre que WordPress soit disponible] **********************************
+ok: [localhost]
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

@@ -64,38 +64,73 @@ docker exec -w /tmp/wp ansible ansible-playbook wordpress-playbook.yaml
 |---|---|---|
 | 1er (après suppression des ressources WordPress/MySQL) | `ok=4 changed=3 failed=0` | Ansible recrée MySQL, WordPress et le Service |
 | 2e | `ok=4 changed=0 failed=0` | **idempotence** : l'état est déjà conforme, rien n'est modifié |
+| contrôle du 16/11 (17 h 45) : Service `wordpress-service` supprimé | `ok=4 changed=1 failed=0` | Ansible ne recrée **que** ce qui manque, puis `changed=0` au passage suivant |
 
 Correction : le playbook utilise `src:` au lieu de `lookup('file') + definition`, qui ne gère pas bien les fichiers à plusieurs documents (`---`). Une dernière tâche attend que WordPress soit `Available`.
 
+## Preuves texte (journaux complets)
+
+- [`kubectl-get-all.txt`](preuves/kubectl-get-all.txt) — état complet du cluster (nœud, pods, services, deployments, PVC)
+- [`ansible-passage1-service-recree.txt`](preuves/ansible-passage1-service-recree.txt) — Service WordPress supprimé puis recréé par Ansible : `changed=1`
+- [`ansible-passage2-idempotence.txt`](preuves/ansible-passage2-idempotence.txt) — second passage : `changed=0`
+
 ## Captures
 
-**Conteneurs : minikube, jenkins et ansible en cours d'exécution**
+**kubectl get nodes / get all : nœud Ready, 8 pods Running, 4 Deployments disponibles**
 
-![Conteneurs : minikube, jenkins et ansible en cours d'exécution](captures/01-conteneurs-minikube-jenkins-ansible.png)
+![kubectl get nodes / get all : nœud Ready, 8 pods Running, 4 Deployments disponibles](captures/01-get-nodes-get-all.png)
+
+**ReplicaSets et kubectl describe pod my-pod**
+
+![ReplicaSets et kubectl describe pod my-pod](captures/02-replicasets-describe-pod.png)
+
+**TP 4.2 — my-pod recréé depuis pod.yaml**
+
+![TP 4.2 — my-pod recréé depuis pod.yaml](captures/03-pod-recree-describe.png)
+
+**TP 4.2 — événements du pod : Scheduled sur minikube**
+
+![TP 4.2 — événements du pod : Scheduled sur minikube](captures/04-pod-events-scheduled.png)
+
+**TP 4.3 — pod b4r79 supprimé, nouveau pod hd4zn créé (3 s) ; port-forward vers la WebApp**
+
+![TP 4.3 — pod b4r79 supprimé, nouveau pod hd4zn créé (3 s) ; port-forward vers la WebApp](captures/05-auto-reparation-et-port-forward.png)
+
+**TP 4.4 — WebApp legeni/webapp:v1 sur http://localhost:8180**
+
+![TP 4.4 — WebApp legeni/webapp:v1 sur http://localhost:8180](captures/06-webapp-localhost-8180.png)
+
+**TP 4.5 — port-forward vers wordpress-service**
+
+![TP 4.5 — port-forward vers wordpress-service](captures/07-wordpress-port-forward.png)
+
+**TP 4.5 — WordPress installé (site CC_DEVOPS) sur http://localhost:8081**
+
+![TP 4.5 — WordPress installé (site CC_DEVOPS) sur http://localhost:8081](captures/08-wordpress-site-cc-devops.png)
+
+**Erreurs rencontrées : syntaxe de kubectl delete, ssh absent du PATH pour minikube service**
+
+![Erreurs rencontrées : syntaxe de kubectl delete, ssh absent du PATH pour minikube service](captures/09-erreurs-delete-et-minikube-service.png)
+
+**Docker Desktop : conteneurs minikube, jenkins et ansible**
+
+![Docker Desktop : conteneurs minikube, jenkins et ansible](captures/10-conteneurs-minikube-jenkins-ansible.png)
 
 **Volumes : minikube (3,2 Go) et jenkins_home**
 
-![Volumes : minikube (3,2 Go) et jenkins_home](captures/02-volumes-minikube-jenkins.png)
+![Volumes : minikube (3,2 Go) et jenkins_home](captures/11-volumes-minikube-jenkins.png)
 
 **Logs minikube : adresse du nœud 192.168.49.2**
 
-![Logs minikube : adresse du nœud 192.168.49.2](captures/03-logs-minikube-adresse-ip.png)
+![Logs minikube : adresse du nœud 192.168.49.2](captures/12-logs-minikube-adresse-ip.png)
 
 **Logs minikube : démarrage des services du nœud**
 
-![Logs minikube : démarrage des services du nœud](captures/04-logs-minikube-demarrage-systeme.png)
+![Logs minikube : démarrage des services du nœud](captures/13-logs-minikube-demarrage-systeme.png)
 
-**Logs minikube : nœud Debian 12 démarré**
+**Logs minikube : nœud Debian 12**
 
-![Logs minikube : nœud Debian 12 démarré](captures/05-logs-minikube-debian.png)
-
-### Captures encore à ajouter
-
-- [ ] `kubectl get nodes` et `kubectl get all`
-- [ ] `kubectl describe pod my-pod` (événements)
-- [ ] suppression d'un pod puis recréation automatique
-- [ ] page WebApp et page d'installation WordPress (`minikube service … --url`)
-- [ ] les deux passages du playbook (`changed=3` puis `changed=0`)
+![Logs minikube : nœud Debian 12](captures/14-logs-minikube-debian.png)
 
 ## Problèmes rencontrés
 
@@ -106,3 +141,6 @@ Correction : le playbook utilise `src:` au lieu de `lookup('file') + definition`
 | `TLS handshake timeout` sur `gcr.io/k8s-minikube/kicbase` | connexion instable | `docker pull kicbase/stable:v0.0.51` puis `--base-image` |
 | `ImagePullBackOff` sur `mysql:8.0` | coupure réseau pendant le pull dans le cluster | `docker pull mysql:8.0` puis `minikube image load mysql:8.0` |
 | cluster qui ne répond plus | disque C: plein | libérer de l'espace puis `minikube start` |
+| `error: there is no need to specify a resource type…` | `kubectl delete pod pod/<nom>` : type donné deux fois | `kubectl delete pod <nom>` |
+| `error starting ssh tunnel: exec: "ssh": executable file not found` | `minikube service` a besoin de ssh, absent du PATH | `kubectl port-forward svc/<service> <port>:<port>` |
+| `Events: <none>` dans `describe pod` | événements effacés après 1 h | recréer le pod puis `describe` aussitôt |

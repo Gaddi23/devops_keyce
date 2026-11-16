@@ -1,0 +1,385 @@
+Started by user TCHATCHOUA GADDIELA
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/artefact
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Legeni07/alpinehelloworld.git
+ > git init /var/jenkins_home/workspace/artefact # timeout=10
+Fetching upstream changes from https://github.com/Legeni07/alpinehelloworld.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Legeni07/alpinehelloworld.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Legeni07/alpinehelloworld.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision 9a71aa65c2fb38ce663023cb6aca5b82908b9050 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 9a71aa65c2fb38ce663023cb6aca5b82908b9050 # timeout=10
+Commit message: "Merge pull request #1 from Legeni07/Legeni07-devtest"
+First time build. Skipping changelog.
+[artefact] $ /bin/bash /tmp/jenkins3940862248308127569.sh
+Sending build context to Docker daemon  9.216kB
+Step 1/9 : FROM alpine:latest
+ ---> f59abe656b69
+Step 2/9 : RUN apk add --no-cache --update python3 py3-pip bash
+ ---> Using cache
+ ---> c8f005544969
+Step 3/9 : ADD ./webapp/requirements.txt /tmp/requirements.txt
+ ---> Using cache
+ ---> 40ef8c6f3d15
+Step 4/9 : RUN pip3 install --break-system-packages --no-cache-dir -q -r /tmp/requirements.txt
+ ---> Using cache
+ ---> 2caa6b51c2eb
+Step 5/9 : ADD ./webapp /opt/webapp/
+ ---> Using cache
+ ---> b7c042c87e13
+Step 6/9 : WORKDIR /opt/webapp
+ ---> Using cache
+ ---> 1320f6b152cf
+Step 7/9 : RUN adduser -D myuser
+ ---> Using cache
+ ---> ba6fd35fd752
+Step 8/9 : USER myuser
+ ---> Using cache
+ ---> 49bcad7bc0d3
+Step 9/9 : CMD gunicorn --bind 0.0.0.0:$PORT wsgi
+ ---> Using cache
+ ---> 77c13afc0e0d
+Successfully built 77c13afc0e0d
+Successfully tagged gaddiela/alpinehelloworld:latest
+f358d741532fd9bf91d93c07ab818a33701377159f4b423e60c8f51fa2f5fbb8
+HttpMethod: GET
+URL: http://172.17.0.1
+Sending request to url: http://172.17.0.1/
+Response Code: 200
+Success: Status code 200 is in the accepted range: 200
+[artefact] $ /bin/bash /tmp/jenkins16706533067208905401.sh
+alpinehelloworld
+alpinehelloworld
+[artefact] $ /bin/bash /tmp/jenkins11201483126621513280.sh
+WARNING! Your credentials are stored unencrypted in '/var/jenkins_home/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+Login Succeeded
+The push refers to repository [docker.io/gaddiela/alpinehelloworld]
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+899cc2a4eccc: Waiting
+2d1a3c05c427: Waiting
+2c689ab4b5f6: Waiting
+84db5eb9c9d9: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+d57cca79183f: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+d57cca79183f: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+d57cca79183f: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+881fc932939e: Waiting
+d57cca79183f: Waiting
+881fc932939e: Waiting
+2c689ab4b5f6: Pushed
+84db5eb9c9d9: Pushed
+881fc932939e: Waiting
+881fc932939e: Waiting
+881fc932939e: Waiting
+881fc932939e: Mounted from willhallonline/ansible
+d57cca79183f: Pushed
+2d1a3c05c427: Pushed
+899cc2a4eccc: Pushed
+latest: digest: sha256:77c13afc0e0d8514c63b9e8fa2b294528b24d75736328dacd0941660dbc493cf size: 1622
+Removing login credentials for https://index.docker.io/v1/
+Finished: SUCCESS
