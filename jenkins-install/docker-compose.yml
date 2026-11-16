@@ -1,17 +1,37 @@
-version: '3.1'
 services:
   jenkins:
     image: jenkins/jenkins:lts
+    container_name: jenkins
     restart: always
     ports:
       - '8185:8080'
-      - '22000:22'
       - '50000:50000'
     privileged: true
     volumes:
-      - 'jenkins_home:/var/lib/jenkins/'
+      - 'jenkins_home:/var/jenkins_home'
       - '/var/run/docker.sock:/var/run/docker.sock'
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+    networks:
+      - devops-network
+
+  ansible:
+    image: willhallonline/ansible:latest
+    container_name: ansible
+    volumes:
+      - ./ansible-data:/ansible
+    working_dir: /ansible
+    command: tail -f /dev/null
+    networks:
+      - devops-network
+
+networks:
+  devops-network:
+    driver: bridge
+
 volumes:
   jenkins_home:
     driver: local

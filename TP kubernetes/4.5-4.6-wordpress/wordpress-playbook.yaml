@@ -1,0 +1,35 @@
+# TP 4.6 : déploiement de WordPress par Ansible (collection kubernetes.core)
+# "src" accepte les fichiers à plusieurs documents (---), contrairement à lookup('file') + definition.
+- name: Deploy WordPress
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Deploy MySQL (PVC + Deployment + Service)
+      kubernetes.core.k8s:
+        state: present
+        namespace: default
+        src: mysql-deployment.yaml
+
+    - name: Deploy WordPress
+      kubernetes.core.k8s:
+        state: present
+        namespace: default
+        src: wordpress-deployment.yaml
+
+    - name: Expose WordPress Service
+      kubernetes.core.k8s:
+        state: present
+        namespace: default
+        src: wordpress-service.yaml
+
+    - name: Attendre que WordPress soit disponible
+      kubernetes.core.k8s_info:
+        kind: Deployment
+        name: wordpress
+        namespace: default
+        wait: true
+        wait_condition:
+          type: Available
+          status: "True"
+        wait_timeout: 300
